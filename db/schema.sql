@@ -70,11 +70,11 @@ FOR EACH ROW
 BEGIN
     SELECT CASE 
         WHEN(SELECT activated FROM accounts WHERE id=NEW.from_id)=0
-            THEN RAISE(ABORT,'ERROR:Sending account not active');
+            THEN RAISE(ABORT,'ERROR:Sending account not active')
         WHEN(SELECT activated FROM accounts WHERE id=NEW.to_id)=0
-            THEN RAISE(ABORT,'ERROR:Reciveing account not active');
+            THEN RAISE(ABORT,'ERROR:Reciveing account not active')
         WHEN(SELECT balance FROM accounts WHERE id=NEW.from_id)<NEW.amount
-            THEN RAISE(ABORT,'ERROR:Sending account has insufficient funds');
+            THEN RAISE(ABORT,'ERROR:Sending account has insufficient funds')
     END;
     UPDATE accounts
     SET balance=balance-NEW.amount
