@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS accounts(
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
     bank_id INTEGER NOT NULL,
-    account_type INTEGER NOT NULL,
+    account_type TEXT NOT NULL,
     balance INTEGER NOT NULL CHECK(balance>=0),
     activated INTEGER NOT NULL 
     CHECK(activated==1 or activated==0) DEFAULT 1,
