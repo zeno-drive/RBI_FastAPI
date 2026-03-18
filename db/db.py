@@ -60,7 +60,7 @@ class Account(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
-class TransactionHistory(Base):
+class Transaction(Base):
     __tablename__ = "transaction_history"
     id: Mapped[int] = mapped_column(primary_key=True)
     from_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
