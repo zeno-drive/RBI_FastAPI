@@ -4,8 +4,8 @@ from datetime import datetime
 import sqlite3
 from pathlib import Path
 
-BASE_DIR= Path(__file__).parent
-DB_PATH=BASE_DIR/"rbi.db"
+BASE_DIR = Path(__file__).parent
+DB_PATH = BASE_DIR / "rbi.db"
 
 engine = create_engine(f"sqlite:///{DB_PATH}", echo=True)
 
@@ -25,7 +25,6 @@ def init_db():
     conn = sqlite3.connect("rbi.db")
     conn.executescript(sql)
     conn.close()
-    
 
 
 if not DB_PATH.exists():
