@@ -33,6 +33,13 @@ def deactivate_user(user_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db.query(User).filter(User.id == user_id).first()
 
+@app.get("/users/{user_id}/accounts",response_model=List[AccountResponse])
+def get_user_accounts(user_id:int,db:Session=Depends(get_db)):
+    accounts=db.query(Account).filter(Account.user_id==user_id).all()
+    if not accounts:
+        return []
+    return accounts
+
 # accounts
 @app.get("/accounts/{account_id}", response_model=AccountResponse)
 def get_account(account_id: int, db: Session = Depends(get_db)):
@@ -74,6 +81,17 @@ def create_bank(bank: BankCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_bank)
     return new_bank
+@app.get("/banks", response_model=List[BankResponse])
+def get_all_banks(db: Session = Depends(get_db)):
+    return db.query(Bank).all()
+
+@app.get("/banks/{bank_id}/accounts",response_model=List[AccountResponse])
+def accounts_in_bank(bank_id:int,db:Session=Depends(get_db)):
+    accounts=db.query(Account).filter(Account.bank_id==bank_id).all()
+    if not accounts:
+        return []
+    return accounts
+
 
 # transactions
 @app.get("/transactions/{transaction_id}", response_model=TransactionResponse)
@@ -101,16 +119,5 @@ def account_transaction_history(account_id:int,db:Session=Depends(get_db)):
     if not transaction:
         return []
     return transaction 
-#banks
-@app.get("/banks", response_model=List[BankResponse])
-def get_all_banks(db: Session = Depends(get_db)):
-    return db.query(Bank).all()
-
-@app.get("/banks/{bank_id}/accounts",response_model=List[AccountResponse])
-def accounts_in_bank(bank_id:int,db:Session=Depends(get_db)):
-    accounts=db.query(Account).filter(Account.bank_id==bank_id).all()
-    if not accounts:
-        return []
-    return accounts
 
     

@@ -7,31 +7,31 @@
 
 ## LAYER 0 — Project Setup
 
-- [ *] Confirm `pyproject.toml` has all dependencies — `fastapi`, `sqlalchemy`, `uvicorn`, `pydantic`, `pytest`, `python-dotenv`
-- [ *] Confirm `.env` has `DATABASE_URL` and any other config vars
-- [ *] Confirm `.gitignore` excludes `rbi.db`, `.env`, `__pycache__`
-- [ *] Confirm `uv.lock` is committed and reproducible
+- [x] Confirm `pyproject.toml` has all dependencies — `fastapi`, `sqlalchemy`, `uvicorn`, `pydantic`, `pytest`, `python-dotenv`
+- [x] Confirm `.env` has `DATABASE_URL` and any other config vars
+- [x] Confirm `.gitignore` excludes `rbi.db`, `.env`, `__pycache__`
+- [x] Confirm `uv.lock` is committed and reproducible
 
 ---
 
 ## LAYER 1 — `db/db.py`
 
-- [ *] Add `SessionLocal` — the session factory (`sessionmaker`)
-- [ *] Add `get_db()` — FastAPI dependency that yields a session and closes it after
-- [ ]* Verify all 4 ORM models match `schema.sql` exactly — column names, types, constraints
-- [* ] Add `Base.metadata.create_all(engine)` call or confirm `schema.sql` handles creation
-- [ *] Enforce `PRAGMA foreign_keys = ON` at connection level via SQLAlchemy event listener
+- [x] Add `SessionLocal` — the session factory (`sessionmaker`)
+- [x] Add `get_db()` — FastAPI dependency that yields a session and closes it after
+- [ ] Verify all 4 ORM models match `schema.sql` exactly — `account_type: Mapped[str]` still needs fixing
+- [x] Add `Base.metadata.create_all(engine)` call or confirm `schema.sql` handles creation
+- [x] Enforce `PRAGMA foreign_keys = ON` at connection level via SQLAlchemy event listener
 
 ---
 
 ## LAYER 2 — `db/test_db.py`
 
-- [ ] Fixture: fresh **in-memory** test DB — never touch `rbi.db`
-- [ ] Fixture: run `schema.sql` against the test DB
-- [ ] Fixture: inject seed data from `ingectdb.sql`
+- [x] Fixture: fresh **in-memory** test DB — never touch `rbi.db`
+- [x] Fixture: run `schema.sql` against the test DB
+- [ ] Fixture: inject seed data from `injectdb.sql`
 - [ ] Test: create user → reads back correctly
 - [ ] Test: create account → FK to user works
-- [ ] Test: valid transaction → trigger fires, balances update correctly
+- [x] Test: valid transaction → trigger fires, balances update correctly ✅ PASSING
 - [ ] Test: transaction with insufficient funds → trigger raises, balances unchanged
 - [ ] Test: transaction to/from deactivated account → trigger raises
 - [ ] Test: delete account → trigger sets `activated=0`, row not actually deleted
@@ -44,17 +44,20 @@
 
 > Pydantic schemas only — separate from SQLAlchemy ORM models in `db.py`
 
-- [ ] `UserCreate` — name
-- [ ] `UserResponse` — id, name, activated, created_at
-- [ ] `BankResponse` — id, name
-- [ ] `AccountCreate` — user_id, bank_id, account_type, balance
-- [ ] `AccountResponse` — all account fields safe to expose
-- [ ] `TransactionCreate` — from_id, to_id, amount
-- [ ] `TransactionResponse` — id, from_id, to_id, amount, transaction_time
-- [ ] Validator: amount must be > 0
-- [ ] Validator: account_type must be 1–4
-- [ ] Validator: balance must be ≥ 0
-- [ ] Add `model_config = ConfigDict(from_attributes=True)` on all response models
+- [x] `UserCreate` — name
+- [x] `UserResponse` — id, name, activated
+- [x] `BankResponse` — id, name
+- [x] `AccountCreate` — user_id, bank_id, account_type, balance
+- [x] `AccountResponse` — all account fields safe to expose
+- [x] `TransactionCreate` — from_id, to_id, amount
+- [x] `TransactionResponse` — id, from_id, to_id, amount, transaction_time
+- [x] Validator: amount must be > 0
+- [x] Validator: account_type — `Literal['Savings', 'Current', 'Fixed Deposit', 'Salary']`
+- [x] Validator: balance must be ≥ 0
+- [x] `model_config = ConfigDict(from_attributes=True)` on all base models
+- [x] `field_validator` on Create models only (not Base) — no double-conversion bug
+- [x] `field_serializer` paise → rupees on output
+- [x] rupees → paise on input via validator
 
 ---
 
@@ -65,36 +68,43 @@
 - [ ] Test: `AccountCreate` rejects invalid account_type
 - [ ] Test: `AccountCreate` rejects negative balance
 - [ ] Test: `UserResponse` correctly serialises from a SQLAlchemy ORM object
+- [ ] Test: balance converts rupees → paise correctly on input
+- [ ] Test: balance converts paise → rupees correctly on output
 
 ---
 
 ## LAYER 5 — `main.py`
 
-- [ ] FastAPI app initialised
-- [ ] `get_db` dependency wired in
+- [x] FastAPI app initialised
+- [x] `get_db` dependency wired in
 
 **Users**
-- [ ] `POST   /users`          — create user
-- [ ] `GET    /users/{id}`     — get user + their accounts
-- [ ] `DELETE /users/{id}`     — soft delete (trigger handles it)
+- [x] `POST   /users`
+- [x] `GET    /users/{id}`
+- [x] `DELETE /users/{id}` — soft delete via trigger
 
 **Banks**
-- [ ] `GET    /banks`          — list all banks
-- [ ] `GET    /banks/{id}`     — get bank details
+- [x] `GET    /banks` — list all banks
+- [x] `GET    /banks/{id}`
+- [x] `POST   /banks`
+- [x] `GET    /banks/{id}/accounts`
 
 **Accounts**
-- [ ] `POST   /accounts`       — create account
-- [ ] `GET    /accounts/{id}`  — get account
-- [ ] `DELETE /accounts/{id}`  — soft delete
+- [x] `POST   /accounts`
+- [x] `GET    /accounts/{id}`
+- [x] `DELETE /accounts/{id}` — soft delete via trigger
+- [x] `GET    /accounts/{id}/transactions`
 
 **Transactions**
-- [ ] `POST   /transactions`          — insert into `transaction_history` (trigger does balance work — do NOT write SQLAlchemy balance logic here)
-- [ ] `GET    /transactions/{account_id}` — get transaction history for an account
+- [x] `POST   /transactions` — trigger handles balance updates
+- [x] `GET    /transactions/{id}`
+- [x] `IntegrityError` from trigger caught → returns 400 with trigger message
 
 **Error handling**
-- [ ] All routes use `response_model=` — no raw ORM objects returned
-- [ ] All routes return correct HTTP status codes (400, 404, 422)
-- [ ] Trigger `RAISE(ABORT, 'ERROR:...')` messages caught and returned as 400 with the trigger message
+- [x] All routes use `response_model=`
+- [x] 404 on missing resources
+- [x] 400 on trigger abort (insufficient funds, inactive account)
+- [x] `GET /users/{id}` — should also return user's accounts (currently returns user only)
 
 ---
 
@@ -124,4 +134,8 @@
 
 2. **`PRAGMA foreign_keys = ON` per connection.** SQLite disables FK enforcement by default. Must be set via a SQLAlchemy connection event listener in `db.py` — without it, invalid FKs are silently accepted and tests pass incorrectly.
 
-3. **Tests use in-memory DB only.** `test_db.py` must never import or touch `rbi.db`. Use `sqlite:///:memory:`, run `schema.sql`, inject `ingectdb.sql` as fixture. Production data must stay safe.
+3. **Tests use in-memory DB only.** `test_db.py` must never import or touch `rbi.db`. Use `sqlite:///:memory:`, run `schema.sql`, inject `injectdb.sql` as fixture. Production data must stay safe.
+
+4. **Flush before FK children.** In test setup always `db.flush()` after inserting parent rows (bank, user) before inserting children (accounts). SQLAlchemy batching will otherwise violate FK constraints.
+
+5. **Validators on Create only.** `field_validator` must live on `AccountCreate` / `TransactionCreate`, NOT on `AccountBase` / `TransactionBase`. Response models read raw paise from DB — running the validator on them doubles the value silently.
