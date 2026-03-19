@@ -1,7 +1,10 @@
 from db.db import *
 from fastapi import FastAPI, Depends, HTTPException
 from models.models import *
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from typing import List
 
 app = FastAPI()
 
@@ -55,6 +58,7 @@ def deactivate_account(account_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db.query(Account).filter(Account.id == account_id).first()
 
+
 # banks
 @app.get("/banks/{bank_id}", response_model=BankResponse)
 def get_bank(bank_id: int, db: Session = Depends(get_db)):
@@ -81,8 +85,32 @@ def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
 
 @app.post("/transactions", response_model=TransactionResponse)
 def create_transaction(transaction: TransactionCreate, db: Session = Depends(get_db)):
-    new_transaction = Transaction(**transaction.model_dump())
-    db.add(new_transaction)
-    db.commit()
-    db.refresh(new_transaction)
-    return new_transaction
+    try:   
+        new_transaction = Transaction(**transaction.model_dump())
+        db.add(new_transaction)
+        db.commit()
+        db.refresh(new_transaction)
+        return new_transaction
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e.orig))
+
+@app.get("/accounts/{account_id}/transactions",response_model=List[TransactionResponse])
+def account_transaction_history(account_id:int,db:Session=Depends(get_db)):
+    transaction=db.query(Transaction).filter(or_(Transaction.from_id==account_id,Transaction.to_id==account_id)).all()
+    if not transaction:
+        return []
+    return transaction 
+#banks
+@app.get("/banks", response_model=List[BankResponse])
+def get_all_banks(db: Session = Depends(get_db)):
+    return db.query(Bank).all()
+
+@app.get("/banks/{bank_id}/accounts",response_model=List[AccountResponse])
+def accounts_in_bank(bank_id:int,db:Session=Depends(get_db)):
+    accounts=db.query(Account).filter(Account.bank_id==bank_id).all()
+    if not accounts:
+        return []
+    return accounts
+
+    
