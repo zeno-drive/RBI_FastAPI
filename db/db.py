@@ -54,7 +54,7 @@ class Account(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     bank_id: Mapped[int] = mapped_column(ForeignKey("banks.id"))
-    account_type: Mapped[int]
+    account_type: Mapped[str]
     balance: Mapped[int]
     activated: Mapped[int] = mapped_column(default=1)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
