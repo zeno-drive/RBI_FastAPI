@@ -15,14 +15,18 @@ from fastapi.responses import HTMLResponse
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
     with open("static/index.html") as f:
         return f.read()
 
+
 @app.get("/")
 def root():
-    return RedirectResponse(url="/ui")  
+    return RedirectResponse(url="/ui")
+
+
 # users
 @app.get("/users/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -30,6 +34,11 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@app.get("/users", response_model=List[UserResponse])
+def get_all_users(db: Session = Depends(get_db)):
+    return db.query(User).all()
 
 
 @app.post("/users", response_model=UserResponse)
@@ -60,6 +69,11 @@ def get_user_accounts(user_id: int, db: Session = Depends(get_db)):
 
 
 # accounts
+@app.get("/accounts", response_model=List[AccountResponse])
+def get_all_accounts(db: Session = Depends(get_db)):
+    return db.query(Account).all()
+
+
 @app.get("/accounts/{account_id}", response_model=AccountResponse)
 def get_account(account_id: int, db: Session = Depends(get_db)):
     account = db.query(Account).filter(Account.id == account_id).first()
