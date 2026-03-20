@@ -35,11 +35,9 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-
 @app.get("/users", response_model=List[UserResponse])
-def get_all_users(db: Session = Depends(get_db)):
-    return db.query(User).all()
-
+def get_all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(User).offset(skip).limit(limit).all()
 
 @app.post("/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -68,11 +66,21 @@ def get_user_accounts(user_id: int, db: Session = Depends(get_db)):
     return accounts
 
 
+@app.patch("/users/{user_id}/reactivate", response_model=UserResponse)
+def reactivate_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.activated = 1
+    db.commit()
+    db.refresh(user)
+    return user
+
+
 # accounts
 @app.get("/accounts", response_model=List[AccountResponse])
-def get_all_accounts(db: Session = Depends(get_db)):
-    return db.query(Account).all()
-
+def get_all_accounts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return db.query(Account).offset(skip).limit(limit).all()
 
 @app.get("/accounts/{account_id}", response_model=AccountResponse)
 def get_account(account_id: int, db: Session = Depends(get_db)):
@@ -99,6 +107,17 @@ def deactivate_account(account_id: int, db: Session = Depends(get_db)):
     db.delete(account)
     db.commit()
     return db.query(Account).filter(Account.id == account_id).first()
+
+
+@app.patch("/accounts/{account_id}/reactivate", response_model=AccountResponse)
+def reactivate_account(account_id: int, db: Session = Depends(get_db)):
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    account.activated = 1
+    db.commit()
+    db.refresh(account)
+    return account
 
 
 # banks
