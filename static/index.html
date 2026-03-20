@@ -63,6 +63,8 @@
 
   button.danger { background: none; border: 1px solid #2a1a1e; color: var(--red); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; cursor: pointer; border-radius: 2px; transition: background 0.15s; }
   button.danger:hover { background: #2a1a1e; }
+  button.activate { background: none; border: 1px solid #1a2e22; color: var(--green); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; cursor: pointer; border-radius: 2px; transition: background 0.15s; }
+  button.activate:hover { background: #1a2e22; }
 
   .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 2px; font-size: 12px; z-index: 999; animation: fadeup 0.2s ease; }
   .toast.ok  { background: #1a2e22; color: var(--green); border: 1px solid #2a4a32; }
@@ -110,19 +112,17 @@ function Toast({ msg, type }) {
   return <div className={`toast ${type}`}>{msg}</div>;
 }
 
-// ─── Shared data context ────────────────────────────────────
 const DataCtx = React.createContext({});
-
 function useData() { return React.useContext(DataCtx); }
 
 // ─── USERS TAB ──────────────────────────────────────────────
 function UsersTab({ toast }) {
-  const { users, banks, refreshUsers } = useData();
-  const [userId, setUserId] = React.useState("");
-  const [user, setUser]     = React.useState(null);
-  const [accs, setAccs]     = React.useState([]);
-  const [name, setName]     = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const { users, refreshUsers } = useData();
+  const [userId, setUserId]     = React.useState("");
+  const [user, setUser]         = React.useState(null);
+  const [accs, setAccs]         = React.useState([]);
+  const [name, setName]         = React.useState("");
+  const [loading, setLoading]   = React.useState(false);
 
   async function lookup(id) {
     const target = id || userId;
@@ -150,7 +150,16 @@ function UsersTab({ toast }) {
     try {
       await req("DELETE", `/users/${id}`);
       toast(`User #${id} deactivated`, "ok");
-      setUser(null); setAccs([]);
+      lookup(id);
+      refreshUsers();
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function reactivate(id) {
+    try {
+      await req("PATCH", `/users/${id}/reactivate`);
+      toast(`User #${id} reactivated`, "ok");
+      lookup(id);
       refreshUsers();
     } catch(e) { toast(e.message, "err"); }
   }
@@ -160,7 +169,9 @@ function UsersTab({ toast }) {
       <div className="panel">
         <div className="label">Select user</div>
         <div style={{display:"flex", gap:8, marginBottom:24}}>
-          <select value={userId} onChange={e=>{setUserId(e.target.value); lookup(e.target.value);}} style={{flex:1}}>
+          <select value={userId}
+            onChange={e=>{setUserId(e.target.value); lookup(e.target.value);}}
+            style={{flex:1}}>
             <option value="">— Select a user —</option>
             {users.map(u=>(
               <option key={u.id} value={u.id}>
@@ -185,8 +196,12 @@ function UsersTab({ toast }) {
                 <span className="val">{v}</span>
               </div>
             ))}
-            <div style={{marginTop:12}}>
-              <button className="danger" onClick={()=>deactivate(user.id)}>Deactivate user</button>
+
+            <div style={{marginTop:12, display:"flex", gap:8}}>
+              {user.activated
+                ? <button className="danger"   onClick={()=>deactivate(user.id)}>Deactivate user</button>
+                : <button className="activate" onClick={()=>reactivate(user.id)}>Reactivate user</button>
+              }
             </div>
 
             {accs.length > 0 && (
@@ -208,7 +223,9 @@ function UsersTab({ toast }) {
                 </table>
               </>
             )}
-            {accs.length === 0 && !loading && <div className="empty">No accounts for this user</div>}
+            {accs.length === 0 && !loading && (
+              <div className="empty">No accounts for this user</div>
+            )}
           </>
         )}
       </div>
@@ -221,14 +238,17 @@ function UsersTab({ toast }) {
             onChange={e=>setName(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&create()} />
         </div>
-        <button className="primary" onClick={create} disabled={!name.trim()}>Create User</button>
+        <button className="primary" onClick={create} disabled={!name.trim()}>
+          Create User
+        </button>
 
         <div className="label" style={{marginTop:32}}>All users — {users.length} records</div>
         <table>
           <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
           <tbody>
             {users.map(u=>(
-              <tr key={u.id} style={{cursor:"pointer"}} onClick={()=>{setUserId(String(u.id));lookup(u.id);}}>
+              <tr key={u.id} style={{cursor:"pointer"}}
+                onClick={()=>{setUserId(String(u.id)); lookup(u.id);}}>
                 <td>{u.id}</td>
                 <td>{u.name}</td>
                 <td><Badge v={u.activated}/></td>
@@ -244,10 +264,10 @@ function UsersTab({ toast }) {
 // ─── BANKS TAB ──────────────────────────────────────────────
 function BanksTab({ toast }) {
   const { banks, refreshBanks } = useData();
-  const [name, setName]     = React.useState("");
-  const [bankId, setBankId] = React.useState("");
-  const [accs, setAccs]     = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  const [name, setName]         = React.useState("");
+  const [bankId, setBankId]     = React.useState("");
+  const [accs, setAccs]         = React.useState([]);
+  const [loading, setLoading]   = React.useState(false);
 
   async function create() {
     if (!name.trim()) return;
@@ -280,8 +300,7 @@ function BanksTab({ toast }) {
                 <td>{b.id}</td>
                 <td>{b.name}</td>
                 <td>
-                  <button className="danger" style={{color:"#4caf7d",borderColor:"#1a2e22"}}
-                    onClick={()=>viewAccounts(b.id)}>
+                  <button className="activate" onClick={()=>viewAccounts(b.id)}>
                     View accounts
                   </button>
                 </td>
@@ -291,6 +310,7 @@ function BanksTab({ toast }) {
         </table>
 
         {loading && <div className="loading">Loading accounts...</div>}
+
         {bankId && accs.length > 0 && (
           <>
             <div className="label">Accounts in Bank #{bankId} ({accs.length})</div>
@@ -308,7 +328,9 @@ function BanksTab({ toast }) {
             </table>
           </>
         )}
-        {bankId && accs.length === 0 && !loading && <div className="empty">No accounts in this bank</div>}
+        {bankId && accs.length === 0 && !loading && (
+          <div className="empty">No accounts in this bank</div>
+        )}
       </div>
 
       <div className="panel">
@@ -319,7 +341,9 @@ function BanksTab({ toast }) {
             onChange={e=>setName(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&create()} />
         </div>
-        <button className="primary" onClick={create} disabled={!name.trim()}>Create Bank</button>
+        <button className="primary" onClick={create} disabled={!name.trim()}>
+          Create Bank
+        </button>
       </div>
     </main>
   );
@@ -328,10 +352,10 @@ function BanksTab({ toast }) {
 // ─── ACCOUNTS TAB ───────────────────────────────────────────
 function AccountsTab({ toast }) {
   const { users, banks, accounts, refreshAccounts } = useData();
-  const [accId, setAccId]   = React.useState("");
-  const [acc, setAcc]       = React.useState(null);
-  const [txns, setTxns]     = React.useState([]);
-  const [form, setForm]     = React.useState({user_id:"",bank_id:"",account_type:"Savings",balance:""});
+  const [accId, setAccId]     = React.useState("");
+  const [acc, setAcc]         = React.useState(null);
+  const [txns, setTxns]       = React.useState([]);
+  const [form, setForm]       = React.useState({user_id:"",bank_id:"",account_type:"Savings",balance:""});
   const [loading, setLoading] = React.useState(false);
 
   async function lookup(id) {
@@ -362,7 +386,16 @@ function AccountsTab({ toast }) {
     try {
       await req("DELETE", `/accounts/${id}`);
       toast(`Account #${id} deactivated`, "ok");
-      setAcc(null); setTxns([]);
+      lookup(id);
+      refreshAccounts();
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function reactivate(id) {
+    try {
+      await req("PATCH", `/accounts/${id}/reactivate`);
+      toast(`Account #${id} reactivated`, "ok");
+      lookup(id);
       refreshAccounts();
     } catch(e) { toast(e.message, "err"); }
   }
@@ -374,11 +407,13 @@ function AccountsTab({ toast }) {
       <div className="panel">
         <div className="label">Select account</div>
         <div style={{display:"flex", gap:8, marginBottom:24}}>
-          <select value={accId} onChange={e=>{setAccId(e.target.value); lookup(e.target.value);}} style={{flex:1}}>
+          <select value={accId}
+            onChange={e=>{setAccId(e.target.value); lookup(e.target.value);}}
+            style={{flex:1}}>
             <option value="">— Select an account —</option>
             {accounts.map(a=>(
               <option key={a.id} value={a.id}>
-                #{a.id} · User {a.user_id} · {a.account_type} · {fmt(a.balance)}
+                #{a.id} · User {a.user_id} · {a.account_type} · {fmt(a.balance)} · {a.activated ? "Active" : "Inactive"}
               </option>
             ))}
           </select>
@@ -401,25 +436,35 @@ function AccountsTab({ toast }) {
                 <span className="val">{v}</span>
               </div>
             ))}
-            <div style={{marginTop:12}}>
-              <button className="danger" onClick={()=>deactivate(acc.id)}>Deactivate account</button>
+
+            <div style={{marginTop:12, display:"flex", gap:8}}>
+              {acc.activated
+                ? <button className="danger"   onClick={()=>deactivate(acc.id)}>Deactivate account</button>
+                : <button className="activate" onClick={()=>reactivate(acc.id)}>Reactivate account</button>
+              }
             </div>
 
             {txns.length > 0 && (
               <>
                 <div className="label" style={{marginTop:24}}>Transaction history ({txns.length})</div>
                 <table>
-                  <thead><tr><th>ID</th><th>From</th><th>To</th><th>Amount</th></tr></thead>
+                  <thead><tr><th>ID</th><th>From</th><th>To</th><th>Amount</th><th>Time</th></tr></thead>
                   <tbody>
                     {txns.map(t=>(
                       <tr key={t.id}>
                         <td>{t.id}</td><td>{t.from_id}</td><td>{t.to_id}</td>
                         <td className="num">{fmt(t.amount)}</td>
+                        <td style={{color:"var(--muted)", fontSize:"11px"}}>
+                          {new Date(t.transaction_time).toLocaleString("en-IN")}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </>
+            )}
+            {txns.length === 0 && !loading && acc && (
+              <div className="empty" style={{marginTop:16}}>No transactions yet</div>
             )}
           </>
         )}
@@ -466,14 +511,16 @@ function AccountsTab({ toast }) {
 // ─── TRANSACTIONS TAB ───────────────────────────────────────
 function TransactionsTab({ toast }) {
   const { accounts } = useData();
-  const [form, setForm] = React.useState({from_id:"",to_id:"",amount:""});
+  const [form, setForm]   = React.useState({from_id:"",to_id:"",amount:""});
   const [txnId, setTxnId] = React.useState("");
   const [txn, setTxn]     = React.useState(null);
 
   async function create() {
     try {
       const t = await req("POST", "/transactions", {
-        from_id: Number(form.from_id), to_id: Number(form.to_id), amount: Number(form.amount),
+        from_id: Number(form.from_id),
+        to_id:   Number(form.to_id),
+        amount:  Number(form.amount),
       });
       toast(`Transaction #${t.id} complete — ${fmt(t.amount)} transferred`, "ok");
       setForm({from_id:"",to_id:"",amount:""});
@@ -489,7 +536,6 @@ function TransactionsTab({ toast }) {
   }
 
   const f = v => setForm(p=>({...p,...v}));
-
   const activeAccounts = accounts.filter(a => a.activated);
 
   return (
@@ -501,7 +547,9 @@ function TransactionsTab({ toast }) {
             onChange={e=>setTxnId(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&lookup()}
             style={{flex:1}} />
-          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>Fetch</button>
+          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
+            Fetch
+          </button>
         </div>
 
         {txn && (
@@ -539,11 +587,13 @@ function TransactionsTab({ toast }) {
           <label>To Account</label>
           <select value={form.to_id} onChange={e=>f({to_id:e.target.value})}>
             <option value="">— Select destination account —</option>
-            {activeAccounts.filter(a=>String(a.id)!==String(form.from_id)).map(a=>(
-              <option key={a.id} value={a.id}>
-                #{a.id} · {a.account_type} · {fmt(a.balance)}
-              </option>
-            ))}
+            {activeAccounts
+              .filter(a=>String(a.id)!==String(form.from_id))
+              .map(a=>(
+                <option key={a.id} value={a.id}>
+                  #{a.id} · {a.account_type} · {fmt(a.balance)}
+                </option>
+              ))}
           </select>
         </div>
         <div className="form-group">
@@ -590,7 +640,6 @@ function App() {
   }
 
   const ctx = { users, banks, accounts, refreshUsers, refreshBanks, refreshAccounts };
-  const props = { toast };
 
   return (
     <DataCtx.Provider value={ctx}>
@@ -603,10 +652,10 @@ function App() {
           <button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>{t}</button>
         ))}
       </nav>
-      {tab==="Users"        && <UsersTab        {...props}/>}
-      {tab==="Banks"        && <BanksTab         {...props}/>}
-      {tab==="Accounts"     && <AccountsTab      {...props}/>}
-      {tab==="Transactions" && <TransactionsTab  {...props}/>}
+      {tab==="Users"        && <UsersTab        toast={toast}/>}
+      {tab==="Banks"        && <BanksTab         toast={toast}/>}
+      {tab==="Accounts"     && <AccountsTab      toast={toast}/>}
+      {tab==="Transactions" && <TransactionsTab  toast={toast}/>}
       <Toast msg={msg} type={type}/>
     </DataCtx.Provider>
   );
