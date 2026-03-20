@@ -10,11 +10,19 @@ from fastapi.responses import RedirectResponse
 app = FastAPI()
 
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/ui", response_class=HTMLResponse)
+def ui():
+    with open("static/index.html") as f:
+        return f.read()
+
 @app.get("/")
 def root():
-    return RedirectResponse(url="/docs")
-
-
+    return RedirectResponse(url="/ui")  
 # users
 @app.get("/users/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):

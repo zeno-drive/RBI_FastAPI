@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RBI Banking System</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    --bg:       #0d0d0d;
+    --surface:  #141414;
+    --border:   #222;
+    --gold:     #c9a84c;
+    --gold-dim: #7a6230;
+    --text:     #e8e0d0;
+    --muted:    #555;
+    --green:    #4caf7d;
+    --red:      #cf6679;
+    --mono:     'IBM Plex Mono', monospace;
+    --serif:    'DM Serif Display', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  header h1 {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  header span {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 20px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* LAYOUT */
+  main {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 0;
+    height: calc(100vh - 97px);
+  }
+  .panel {
+    padding: 24px 32px;
+    overflow-y: auto;
+  }
+  .panel:first-child { border-right: 1px solid var(--border); }
+
+  /* SECTION LABEL */
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1a1a1a;
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:hover td { background: #161616; }
+  tr.clickable { cursor: pointer; }
+
+  .num { color: var(--gold); font-weight: 500; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge.active   { background: #1a2e22; color: var(--green); }
+  .badge.inactive { background: #2a1a1e; color: var(--red); }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  input, select {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus { border-color: var(--gold-dim); }
+  select option { background: #111; }
+
+  button.primary {
+    width: 100%;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 4px;
+    transition: background 0.15s;
+  }
+  button.primary:hover { background: #dbb85a; }
+  button.primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+  button.danger {
+    background: none;
+    border: 1px solid #2a1a1e;
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+  }
+  button.danger:hover { background: #2a1a1e; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    padding: 12px 20px;
+    border-radius: 2px;
+    font-size: 12px;
+    z-index: 999;
+    animation: fadeup 0.2s ease;
+  }
+  .toast.ok  { background: #1a2e22; color: var(--green); border: 1px solid #2a4a32; }
+  .toast.err { background: #2a1a1e; color: var(--red);   border: 1px solid #4a2a32; }
+  @keyframes fadeup {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DETAIL */
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #1a1a1a;
+    font-size: 12px;
+  }
+  .detail-row .key { color: var(--muted); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .detail-row .val { color: var(--text); text-align: right; }
+
+  /* EMPTY */
+  .empty {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 32px 0;
+    text-align: center;
+  }
+
+  /* LOADING */
+  .loading { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; padding: 24px 0; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const API = "https://rbi-fastapi.onrender.com";
+
+// ─── helpers ───────────────────────────────────────────────
+async function req(method, path, body) {
+  const res = await fetch(API + path, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || res.statusText);
+  return data;
+}
+
+function fmt(rupees) {
+  return "₹" + Number(rupees).toLocaleString("en-IN", { minimumFractionDigits: 2 });
+}
+
+function Badge({ v }) {
+  return <span className={`badge ${v ? "active" : "inactive"}`}>{v ? "Active" : "Inactive"}</span>;
+}
+
+// ─── Toast ─────────────────────────────────────────────────
+function Toast({ msg, type }) {
+  if (!msg) return null;
+  return <div className={`toast ${type}`}>{msg}</div>;
+}
+
+// ─── USERS TAB ─────────────────────────────────────────────
+function UsersTab({ toast }) {
+  const [userId, setUserId] = React.useState("");
+  const [user, setUser]     = React.useState(null);
+  const [accs, setAccs]     = React.useState([]);
+  const [name, setName]     = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+
+  async function lookup() {
+    if (!userId) return;
+    setLoading(true);
+    try {
+      const u = await req("GET", `/users/${userId}`);
+      const a = await req("GET", `/users/${userId}/accounts`);
+      setUser(u); setAccs(a);
+    } catch(e) { toast(e.message, "err"); setUser(null); setAccs([]); }
+    setLoading(false);
+  }
+
+  async function create() {
+    if (!name.trim()) return;
+    try {
+      const u = await req("POST", "/users", { name: name.trim() });
+      toast(`User #${u.id} created`, "ok");
+      setName("");
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function deactivate(id) {
+    try {
+      await req("DELETE", `/users/${id}`);
+      toast(`User #${id} deactivated`, "ok");
+      setUser(null); setAccs([]);
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  return (
+    <main>
+      <div className="panel">
+        <div className="label">Lookup user</div>
+        <div style={{display:"flex", gap:8, marginBottom:24}}>
+          <input placeholder="User ID" value={userId}
+            onChange={e=>setUserId(e.target.value)}
+            onKeyDown={e=>e.key==="Enter"&&lookup()}
+            style={{flex:1}} />
+          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
+            Fetch
+          </button>
+        </div>
+
+        {loading && <div className="loading">Fetching...</div>}
+
+        {user && (
+          <>
+            <div className="label">User #{user.id}</div>
+            {[
+              ["Name", user.name],
+              ["Status", <Badge v={user.activated}/>],
+              ["ID", user.id],
+            ].map(([k,v])=>(
+              <div className="detail-row" key={k}>
+                <span className="key">{k}</span>
+                <span className="val">{v}</span>
+              </div>
+            ))}
+            <div style={{marginTop:12}}>
+              <button className="danger" onClick={()=>deactivate(user.id)}>
+                Deactivate user
+              </button>
+            </div>
+
+            {accs.length > 0 && (
+              <>
+                <div className="label" style={{marginTop:24}}>Accounts</div>
+                <table>
+                  <thead><tr>
+                    <th>ID</th><th>Type</th><th>Balance</th><th>Status</th>
+                  </tr></thead>
+                  <tbody>
+                    {accs.map(a=>(
+                      <tr key={a.id}>
+                        <td>{a.id}</td>
+                        <td>{a.account_type}</td>
+                        <td className="num">{fmt(a.balance)}</td>
+                        <td><Badge v={a.activated}/></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="panel">
+        <div className="label">New user</div>
+        <div className="form-group">
+          <label>Full Name</label>
+          <input placeholder="e.g. Priyanshu Ranjan" value={name}
+            onChange={e=>setName(e.target.value)}
+            onKeyDown={e=>e.key==="Enter"&&create()} />
+        </div>
+        <button className="primary" onClick={create} disabled={!name.trim()}>
+          Create User
+        </button>
+      </div>
+    </main>
+  );
+}
+
+// ─── BANKS TAB ─────────────────────────────────────────────
+function BanksTab({ toast }) {
+  const [banks, setBanks]   = React.useState([]);
+  const [name, setName]     = React.useState("");
+  const [bankId, setBankId] = React.useState("");
+  const [accs, setAccs]     = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    req("GET", "/banks").then(setBanks).catch(()=>{});
+  }, []);
+
+  async function create() {
+    if (!name.trim()) return;
+    try {
+      const b = await req("POST", "/banks", { name: name.trim() });
+      toast(`Bank #${b.id} created`, "ok");
+      setName("");
+      setBanks(prev=>[...prev, b]);
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function viewAccounts(id) {
+    setLoading(true); setBankId(id);
+    try {
+      const a = await req("GET", `/banks/${id}/accounts`);
+      setAccs(a);
+    } catch(e) { toast(e.message, "err"); }
+    setLoading(false);
+  }
+
+  return (
+    <main>
+      <div className="panel">
+        <div className="label">All banks — {banks.length} records</div>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th></th></tr></thead>
+          <tbody>
+            {banks.map(b=>(
+              <tr key={b.id} className="clickable">
+                <td>{b.id}</td>
+                <td>{b.name}</td>
+                <td>
+                  <button className="danger" style={{color:"#4caf7d",borderColor:"#1a2e22"}}
+                    onClick={()=>viewAccounts(b.id)}>
+                    View accounts
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {loading && <div className="loading">Loading accounts...</div>}
+
+        {bankId && accs.length > 0 && (
+          <>
+            <div className="label">Accounts in Bank #{bankId}</div>
+            <table>
+              <thead><tr><th>ID</th><th>User</th><th>Type</th><th>Balance</th><th>Status</th></tr></thead>
+              <tbody>
+                {accs.map(a=>(
+                  <tr key={a.id}>
+                    <td>{a.id}</td>
+                    <td>{a.user_id}</td>
+                    <td>{a.account_type}</td>
+                    <td className="num">{fmt(a.balance)}</td>
+                    <td><Badge v={a.activated}/></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+        {bankId && accs.length === 0 && !loading && (
+          <div className="empty">No accounts in this bank</div>
+        )}
+      </div>
+
+      <div className="panel">
+        <div className="label">New bank</div>
+        <div className="form-group">
+          <label>Bank Name</label>
+          <input placeholder="e.g. Axis Bank" value={name}
+            onChange={e=>setName(e.target.value)}
+            onKeyDown={e=>e.key==="Enter"&&create()} />
+        </div>
+        <button className="primary" onClick={create} disabled={!name.trim()}>
+          Create Bank
+        </button>
+      </div>
+    </main>
+  );
+}
+
+// ─── ACCOUNTS TAB ──────────────────────────────────────────
+function AccountsTab({ toast }) {
+  const [accId, setAccId]   = React.useState("");
+  const [acc, setAcc]       = React.useState(null);
+  const [txns, setTxns]     = React.useState([]);
+  const [form, setForm]     = React.useState({user_id:"",bank_id:"",account_type:"Savings",balance:""});
+  const [loading, setLoading] = React.useState(false);
+
+  async function lookup() {
+    if (!accId) return;
+    setLoading(true);
+    try {
+      const a = await req("GET", `/accounts/${accId}`);
+      const t = await req("GET", `/accounts/${accId}/transactions`);
+      setAcc(a); setTxns(t);
+    } catch(e) { toast(e.message, "err"); setAcc(null); }
+    setLoading(false);
+  }
+
+  async function create() {
+    try {
+      const a = await req("POST", "/accounts", {
+        user_id: Number(form.user_id),
+        bank_id: Number(form.bank_id),
+        account_type: form.account_type,
+        balance: Number(form.balance),
+      });
+      toast(`Account #${a.id} created`, "ok");
+      setForm({user_id:"",bank_id:"",account_type:"Savings",balance:""});
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function deactivate(id) {
+    try {
+      await req("DELETE", `/accounts/${id}`);
+      toast(`Account #${id} deactivated`, "ok");
+      setAcc(null); setTxns([]);
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  const f = v => setForm(p=>({...p,...v}));
+
+  return (
+    <main>
+      <div className="panel">
+        <div className="label">Lookup account</div>
+        <div style={{display:"flex", gap:8, marginBottom:24}}>
+          <input placeholder="Account ID" value={accId}
+            onChange={e=>setAccId(e.target.value)}
+            onKeyDown={e=>e.key==="Enter"&&lookup()}
+            style={{flex:1}} />
+          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
+            Fetch
+          </button>
+        </div>
+
+        {loading && <div className="loading">Fetching...</div>}
+
+        {acc && (
+          <>
+            <div className="label">Account #{acc.id}</div>
+            {[
+              ["User ID", acc.user_id],
+              ["Bank ID", acc.bank_id],
+              ["Type", acc.account_type],
+              ["Balance", <span className="num">{fmt(acc.balance)}</span>],
+              ["Status", <Badge v={acc.activated}/>],
+            ].map(([k,v])=>(
+              <div className="detail-row" key={k}>
+                <span className="key">{k}</span>
+                <span className="val">{v}</span>
+              </div>
+            ))}
+            <div style={{marginTop:12}}>
+              <button className="danger" onClick={()=>deactivate(acc.id)}>
+                Deactivate account
+              </button>
+            </div>
+
+            {txns.length > 0 && (
+              <>
+                <div className="label" style={{marginTop:24}}>Transaction history</div>
+                <table>
+                  <thead><tr><th>ID</th><th>From</th><th>To</th><th>Amount</th></tr></thead>
+                  <tbody>
+                    {txns.map(t=>(
+                      <tr key={t.id}>
+                        <td>{t.id}</td>
+                        <td>{t.from_id}</td>
+                        <td>{t.to_id}</td>
+                        <td className="num">{fmt(t.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="panel">
+        <div className="label">New account</div>
+        {[
+          ["User ID", "user_id", "number", "e.g. 2000"],
+          ["Bank ID", "bank_id", "number", "e.g. 1000"],
+          ["Opening Balance (₹)", "balance", "number", "e.g. 5000"],
+        ].map(([label, key, type, ph])=>(
+          <div className="form-group" key={key}>
+            <label>{label}</label>
+            <input type={type} placeholder={ph} value={form[key]}
+              onChange={e=>f({[key]:e.target.value})} />
+          </div>
+        ))}
+        <div className="form-group">
+          <label>Account Type</label>
+          <select value={form.account_type} onChange={e=>f({account_type:e.target.value})}>
+            {["Savings","Current","Fixed Deposit","Salary","Business"].map(t=>(
+              <option key={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+        <button className="primary" onClick={create}
+          disabled={!form.user_id||!form.bank_id||!form.balance}>
+          Create Account
+        </button>
+      </div>
+    </main>
+  );
+}
+
+// ─── TRANSACTIONS TAB ──────────────────────────────────────
+function TransactionsTab({ toast }) {
+  const [form, setForm] = React.useState({from_id:"",to_id:"",amount:""});
+  const [txnId, setTxnId] = React.useState("");
+  const [txn, setTxn]     = React.useState(null);
+
+  async function create() {
+    try {
+      const t = await req("POST", "/transactions", {
+        from_id: Number(form.from_id),
+        to_id:   Number(form.to_id),
+        amount:  Number(form.amount),
+      });
+      toast(`Transaction #${t.id} complete`, "ok");
+      setForm({from_id:"",to_id:"",amount:""});
+    } catch(e) { toast(e.message, "err"); }
+  }
+
+  async function lookup() {
+    if (!txnId) return;
+    try {
+      const t = await req("GET", `/transactions/${txnId}`);
+      setTxn(t);
+    } catch(e) { toast(e.message, "err"); setTxn(null); }
+  }
+
+  const f = v => setForm(p=>({...p,...v}));
+
+  return (
+    <main>
+      <div className="panel">
+        <div className="label">Lookup transaction</div>
+        <div style={{display:"flex", gap:8, marginBottom:24}}>
+          <input placeholder="Transaction ID" value={txnId}
+            onChange={e=>setTxnId(e.target.value)}
+            onKeyDown={e=>e.key==="Enter"&&lookup()}
+            style={{flex:1}} />
+          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
+            Fetch
+          </button>
+        </div>
+
+        {txn && (
+          <>
+            <div className="label">Transaction #{txn.id}</div>
+            {[
+              ["From account", txn.from_id],
+              ["To account",   txn.to_id],
+              ["Amount",       <span className="num">{fmt(txn.amount)}</span>],
+              ["Time",         new Date(txn.transaction_time).toLocaleString("en-IN")],
+            ].map(([k,v])=>(
+              <div className="detail-row" key={k}>
+                <span className="key">{k}</span>
+                <span className="val">{v}</span>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
+      <div className="panel">
+        <div className="label">New transaction</div>
+        {[
+          ["From Account ID", "from_id", "e.g. 3000"],
+          ["To Account ID",   "to_id",   "e.g. 3001"],
+          ["Amount (₹)",      "amount",  "e.g. 500"],
+        ].map(([label, key, ph])=>(
+          <div className="form-group" key={key}>
+            <label>{label}</label>
+            <input type="number" placeholder={ph} value={form[key]}
+              onChange={e=>f({[key]:e.target.value})} />
+          </div>
+        ))}
+        <button className="primary" onClick={create}
+          disabled={!form.from_id||!form.to_id||!form.amount}>
+          Transfer Funds
+        </button>
+      </div>
+    </main>
+  );
+}
+
+// ─── ROOT ──────────────────────────────────────────────────
+const TABS = ["Users", "Banks", "Accounts", "Transactions"];
+
+function App() {
+  const [tab, setTab]     = React.useState("Users");
+  const [msg, setMsg]     = React.useState(null);
+  const [type, setType]   = React.useState("ok");
+  const timerRef          = React.useRef(null);
+
+  function toast(message, kind="ok") {
+    setMsg(message); setType(kind);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setMsg(null), 3000);
+  }
+
+  const props = { toast };
+
+  return (
+    <>
+      <header>
+        <h1>RBI Banking System</h1>
+        <span><span className="status-dot"/>Live · rbi-fastapi.onrender.com</span>
+      </header>
+      <nav>
+        {TABS.map(t=>(
+          <button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>
+            {t}
+          </button>
+        ))}
+      </nav>
+      {tab==="Users"        && <UsersTab        {...props}/>}
+      {tab==="Banks"        && <BanksTab         {...props}/>}
+      {tab==="Accounts"     && <AccountsTab      {...props}/>}
+      {tab==="Transactions" && <TransactionsTab  {...props}/>}
+      <Toast msg={msg} type={type}/>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
