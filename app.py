@@ -5,8 +5,14 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List
+from fastapi.responses import RedirectResponse
 
 app = FastAPI()
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
 
 
 # users

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, field_serializer, field_validator,Field
+from pydantic import BaseModel, ConfigDict, field_serializer, field_validator, Field
 from typing import Literal
 from datetime import datetime
 
@@ -25,7 +25,7 @@ class AccountBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     user_id: int
     bank_id: int
-    account_type: Literal["Savings","Business" ,"Current", "Fixed Deposit", "Salary"]
+    account_type: Literal["Savings", "Business", "Current", "Fixed Deposit", "Salary"]
     balance: int
 
     @field_serializer("balance")
