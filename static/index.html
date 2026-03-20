@@ -22,227 +22,58 @@
     --mono:     'IBM Plex Mono', monospace;
     --serif:    'DM Serif Display', serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 13px; min-height: 100vh; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    min-height: 100vh;
-  }
+  header { border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: baseline; gap: 16px; }
+  header h1 { font-family: var(--serif); font-size: 22px; color: var(--gold); letter-spacing: 0.02em; }
+  header span { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 6px; box-shadow: 0 0 6px var(--green); }
 
-  /* HEADER */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 32px;
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-  }
-  header h1 {
-    font-family: var(--serif);
-    font-size: 22px;
-    color: var(--gold);
-    letter-spacing: 0.02em;
-  }
-  header span {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .status-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green);
-    display: inline-block;
-    margin-right: 6px;
-    box-shadow: 0 0 6px var(--green);
-  }
-
-  /* NAV */
-  nav {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-  }
-  nav button {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 14px 20px 12px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-  }
+  nav { display: flex; border-bottom: 1px solid var(--border); padding: 0 32px; }
+  nav button { background: none; border: none; color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 20px 12px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
   nav button:hover { color: var(--text); }
-  nav button.active {
-    color: var(--gold);
-    border-bottom-color: var(--gold);
-  }
+  nav button.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-  /* LAYOUT */
-  main {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 0;
-    height: calc(100vh - 97px);
-  }
-  .panel {
-    padding: 24px 32px;
-    overflow-y: auto;
-  }
+  main { display: grid; grid-template-columns: 1fr 320px; gap: 0; height: calc(100vh - 97px); }
+  .panel { padding: 24px 32px; overflow-y: auto; }
   .panel:first-child { border-right: 1px solid var(--border); }
 
-  /* SECTION LABEL */
-  .label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
+  .label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
 
-  /* TABLE */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
-  }
-  th {
-    text-align: left;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    font-weight: 500;
-  }
-  td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #1a1a1a;
-    color: var(--text);
-    vertical-align: middle;
-  }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  th { text-align: left; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 500; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1a1a1a; color: var(--text); vertical-align: middle; }
   tr:hover td { background: #161616; }
-  tr.clickable { cursor: pointer; }
 
   .num { color: var(--gold); font-weight: 500; }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
   .badge.active   { background: #1a2e22; color: var(--green); }
   .badge.inactive { background: #2a1a1e; color: var(--red); }
 
-  /* FORM */
   .form-group { margin-bottom: 14px; }
-  .form-group label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  input, select {
-    width: 100%;
-    background: #111;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 9px 12px;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
+  .form-group label { display: block; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  input, select { width: 100%; background: #111; border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 9px 12px; border-radius: 2px; outline: none; transition: border-color 0.15s; }
   input:focus, select:focus { border-color: var(--gold-dim); }
   select option { background: #111; }
 
-  button.primary {
-    width: 100%;
-    background: var(--gold);
-    color: #000;
-    border: none;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 11px;
-    cursor: pointer;
-    border-radius: 2px;
-    margin-top: 4px;
-    transition: background 0.15s;
-  }
+  button.primary { width: 100%; background: var(--gold); color: #000; border: none; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px; cursor: pointer; border-radius: 2px; margin-top: 4px; transition: background 0.15s; }
   button.primary:hover { background: #dbb85a; }
   button.primary:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
-  button.danger {
-    background: none;
-    border: 1px solid #2a1a1e;
-    color: var(--red);
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.15s;
-  }
+  button.danger { background: none; border: 1px solid #2a1a1e; color: var(--red); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; cursor: pointer; border-radius: 2px; transition: background 0.15s; }
   button.danger:hover { background: #2a1a1e; }
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    padding: 12px 20px;
-    border-radius: 2px;
-    font-size: 12px;
-    z-index: 999;
-    animation: fadeup 0.2s ease;
-  }
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 2px; font-size: 12px; z-index: 999; animation: fadeup 0.2s ease; }
   .toast.ok  { background: #1a2e22; color: var(--green); border: 1px solid #2a4a32; }
   .toast.err { background: #2a1a1e; color: var(--red);   border: 1px solid #4a2a32; }
-  @keyframes fadeup {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeup { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* DETAIL */
-  .detail-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #1a1a1a;
-    font-size: 12px;
-  }
+  .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 12px; }
   .detail-row .key { color: var(--muted); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
   .detail-row .val { color: var(--text); text-align: right; }
 
-  /* EMPTY */
-  .empty {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    padding: 32px 0;
-    text-align: center;
-  }
-
-  /* LOADING */
+  .empty { color: var(--muted); font-size: 11px; letter-spacing: 0.08em; padding: 32px 0; text-align: center; }
   .loading { color: var(--muted); font-size: 11px; letter-spacing: 0.1em; padding: 24px 0; }
 
   ::-webkit-scrollbar { width: 4px; }
@@ -252,11 +83,9 @@
 </head>
 <body>
 <div id="root"></div>
-
 <script type="text/babel">
 const API = "https://rbi-fastapi.onrender.com";
 
-// ─── helpers ───────────────────────────────────────────────
 async function req(method, path, body) {
   const res = await fetch(API + path, {
     method,
@@ -276,26 +105,32 @@ function Badge({ v }) {
   return <span className={`badge ${v ? "active" : "inactive"}`}>{v ? "Active" : "Inactive"}</span>;
 }
 
-// ─── Toast ─────────────────────────────────────────────────
 function Toast({ msg, type }) {
   if (!msg) return null;
   return <div className={`toast ${type}`}>{msg}</div>;
 }
 
-// ─── USERS TAB ─────────────────────────────────────────────
+// ─── Shared data context ────────────────────────────────────
+const DataCtx = React.createContext({});
+
+function useData() { return React.useContext(DataCtx); }
+
+// ─── USERS TAB ──────────────────────────────────────────────
 function UsersTab({ toast }) {
+  const { users, banks, refreshUsers } = useData();
   const [userId, setUserId] = React.useState("");
   const [user, setUser]     = React.useState(null);
   const [accs, setAccs]     = React.useState([]);
   const [name, setName]     = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  async function lookup() {
-    if (!userId) return;
+  async function lookup(id) {
+    const target = id || userId;
+    if (!target) return;
     setLoading(true);
     try {
-      const u = await req("GET", `/users/${userId}`);
-      const a = await req("GET", `/users/${userId}/accounts`);
+      const u = await req("GET", `/users/${target}`);
+      const a = await req("GET", `/users/${target}/accounts`);
       setUser(u); setAccs(a);
     } catch(e) { toast(e.message, "err"); setUser(null); setAccs([]); }
     setLoading(false);
@@ -307,6 +142,7 @@ function UsersTab({ toast }) {
       const u = await req("POST", "/users", { name: name.trim() });
       toast(`User #${u.id} created`, "ok");
       setName("");
+      refreshUsers();
     } catch(e) { toast(e.message, "err"); }
   }
 
@@ -315,21 +151,23 @@ function UsersTab({ toast }) {
       await req("DELETE", `/users/${id}`);
       toast(`User #${id} deactivated`, "ok");
       setUser(null); setAccs([]);
+      refreshUsers();
     } catch(e) { toast(e.message, "err"); }
   }
 
   return (
     <main>
       <div className="panel">
-        <div className="label">Lookup user</div>
+        <div className="label">Select user</div>
         <div style={{display:"flex", gap:8, marginBottom:24}}>
-          <input placeholder="User ID" value={userId}
-            onChange={e=>setUserId(e.target.value)}
-            onKeyDown={e=>e.key==="Enter"&&lookup()}
-            style={{flex:1}} />
-          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
-            Fetch
-          </button>
+          <select value={userId} onChange={e=>{setUserId(e.target.value); lookup(e.target.value);}} style={{flex:1}}>
+            <option value="">— Select a user —</option>
+            {users.map(u=>(
+              <option key={u.id} value={u.id}>
+                #{u.id} · {u.name} · {u.activated ? "Active" : "Inactive"}
+              </option>
+            ))}
+          </select>
         </div>
 
         {loading && <div className="loading">Fetching...</div>}
@@ -338,9 +176,9 @@ function UsersTab({ toast }) {
           <>
             <div className="label">User #{user.id}</div>
             {[
-              ["Name", user.name],
+              ["Name",   user.name],
               ["Status", <Badge v={user.activated}/>],
-              ["ID", user.id],
+              ["ID",     user.id],
             ].map(([k,v])=>(
               <div className="detail-row" key={k}>
                 <span className="key">{k}</span>
@@ -348,22 +186,19 @@ function UsersTab({ toast }) {
               </div>
             ))}
             <div style={{marginTop:12}}>
-              <button className="danger" onClick={()=>deactivate(user.id)}>
-                Deactivate user
-              </button>
+              <button className="danger" onClick={()=>deactivate(user.id)}>Deactivate user</button>
             </div>
 
             {accs.length > 0 && (
               <>
-                <div className="label" style={{marginTop:24}}>Accounts</div>
+                <div className="label" style={{marginTop:24}}>Accounts ({accs.length})</div>
                 <table>
-                  <thead><tr>
-                    <th>ID</th><th>Type</th><th>Balance</th><th>Status</th>
-                  </tr></thead>
+                  <thead><tr><th>ID</th><th>Bank</th><th>Type</th><th>Balance</th><th>Status</th></tr></thead>
                   <tbody>
                     {accs.map(a=>(
                       <tr key={a.id}>
                         <td>{a.id}</td>
+                        <td>{a.bank_id}</td>
                         <td>{a.account_type}</td>
                         <td className="num">{fmt(a.balance)}</td>
                         <td><Badge v={a.activated}/></td>
@@ -373,6 +208,7 @@ function UsersTab({ toast }) {
                 </table>
               </>
             )}
+            {accs.length === 0 && !loading && <div className="empty">No accounts for this user</div>}
           </>
         )}
       </div>
@@ -385,25 +221,33 @@ function UsersTab({ toast }) {
             onChange={e=>setName(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&create()} />
         </div>
-        <button className="primary" onClick={create} disabled={!name.trim()}>
-          Create User
-        </button>
+        <button className="primary" onClick={create} disabled={!name.trim()}>Create User</button>
+
+        <div className="label" style={{marginTop:32}}>All users — {users.length} records</div>
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
+          <tbody>
+            {users.map(u=>(
+              <tr key={u.id} style={{cursor:"pointer"}} onClick={()=>{setUserId(String(u.id));lookup(u.id);}}>
+                <td>{u.id}</td>
+                <td>{u.name}</td>
+                <td><Badge v={u.activated}/></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </main>
   );
 }
 
-// ─── BANKS TAB ─────────────────────────────────────────────
+// ─── BANKS TAB ──────────────────────────────────────────────
 function BanksTab({ toast }) {
-  const [banks, setBanks]   = React.useState([]);
+  const { banks, refreshBanks } = useData();
   const [name, setName]     = React.useState("");
   const [bankId, setBankId] = React.useState("");
   const [accs, setAccs]     = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    req("GET", "/banks").then(setBanks).catch(()=>{});
-  }, []);
 
   async function create() {
     if (!name.trim()) return;
@@ -411,7 +255,7 @@ function BanksTab({ toast }) {
       const b = await req("POST", "/banks", { name: name.trim() });
       toast(`Bank #${b.id} created`, "ok");
       setName("");
-      setBanks(prev=>[...prev, b]);
+      refreshBanks();
     } catch(e) { toast(e.message, "err"); }
   }
 
@@ -432,7 +276,7 @@ function BanksTab({ toast }) {
           <thead><tr><th>ID</th><th>Name</th><th></th></tr></thead>
           <tbody>
             {banks.map(b=>(
-              <tr key={b.id} className="clickable">
+              <tr key={b.id}>
                 <td>{b.id}</td>
                 <td>{b.name}</td>
                 <td>
@@ -447,18 +291,15 @@ function BanksTab({ toast }) {
         </table>
 
         {loading && <div className="loading">Loading accounts...</div>}
-
         {bankId && accs.length > 0 && (
           <>
-            <div className="label">Accounts in Bank #{bankId}</div>
+            <div className="label">Accounts in Bank #{bankId} ({accs.length})</div>
             <table>
               <thead><tr><th>ID</th><th>User</th><th>Type</th><th>Balance</th><th>Status</th></tr></thead>
               <tbody>
                 {accs.map(a=>(
                   <tr key={a.id}>
-                    <td>{a.id}</td>
-                    <td>{a.user_id}</td>
-                    <td>{a.account_type}</td>
+                    <td>{a.id}</td><td>{a.user_id}</td><td>{a.account_type}</td>
                     <td className="num">{fmt(a.balance)}</td>
                     <td><Badge v={a.activated}/></td>
                   </tr>
@@ -467,9 +308,7 @@ function BanksTab({ toast }) {
             </table>
           </>
         )}
-        {bankId && accs.length === 0 && !loading && (
-          <div className="empty">No accounts in this bank</div>
-        )}
+        {bankId && accs.length === 0 && !loading && <div className="empty">No accounts in this bank</div>}
       </div>
 
       <div className="panel">
@@ -480,28 +319,28 @@ function BanksTab({ toast }) {
             onChange={e=>setName(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&create()} />
         </div>
-        <button className="primary" onClick={create} disabled={!name.trim()}>
-          Create Bank
-        </button>
+        <button className="primary" onClick={create} disabled={!name.trim()}>Create Bank</button>
       </div>
     </main>
   );
 }
 
-// ─── ACCOUNTS TAB ──────────────────────────────────────────
+// ─── ACCOUNTS TAB ───────────────────────────────────────────
 function AccountsTab({ toast }) {
+  const { users, banks, accounts, refreshAccounts } = useData();
   const [accId, setAccId]   = React.useState("");
   const [acc, setAcc]       = React.useState(null);
   const [txns, setTxns]     = React.useState([]);
   const [form, setForm]     = React.useState({user_id:"",bank_id:"",account_type:"Savings",balance:""});
   const [loading, setLoading] = React.useState(false);
 
-  async function lookup() {
-    if (!accId) return;
+  async function lookup(id) {
+    const target = id || accId;
+    if (!target) return;
     setLoading(true);
     try {
-      const a = await req("GET", `/accounts/${accId}`);
-      const t = await req("GET", `/accounts/${accId}/transactions`);
+      const a = await req("GET", `/accounts/${target}`);
+      const t = await req("GET", `/accounts/${target}/transactions`);
       setAcc(a); setTxns(t);
     } catch(e) { toast(e.message, "err"); setAcc(null); }
     setLoading(false);
@@ -510,13 +349,12 @@ function AccountsTab({ toast }) {
   async function create() {
     try {
       const a = await req("POST", "/accounts", {
-        user_id: Number(form.user_id),
-        bank_id: Number(form.bank_id),
-        account_type: form.account_type,
-        balance: Number(form.balance),
+        user_id: Number(form.user_id), bank_id: Number(form.bank_id),
+        account_type: form.account_type, balance: Number(form.balance),
       });
       toast(`Account #${a.id} created`, "ok");
       setForm({user_id:"",bank_id:"",account_type:"Savings",balance:""});
+      refreshAccounts();
     } catch(e) { toast(e.message, "err"); }
   }
 
@@ -525,6 +363,7 @@ function AccountsTab({ toast }) {
       await req("DELETE", `/accounts/${id}`);
       toast(`Account #${id} deactivated`, "ok");
       setAcc(null); setTxns([]);
+      refreshAccounts();
     } catch(e) { toast(e.message, "err"); }
   }
 
@@ -533,15 +372,16 @@ function AccountsTab({ toast }) {
   return (
     <main>
       <div className="panel">
-        <div className="label">Lookup account</div>
+        <div className="label">Select account</div>
         <div style={{display:"flex", gap:8, marginBottom:24}}>
-          <input placeholder="Account ID" value={accId}
-            onChange={e=>setAccId(e.target.value)}
-            onKeyDown={e=>e.key==="Enter"&&lookup()}
-            style={{flex:1}} />
-          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
-            Fetch
-          </button>
+          <select value={accId} onChange={e=>{setAccId(e.target.value); lookup(e.target.value);}} style={{flex:1}}>
+            <option value="">— Select an account —</option>
+            {accounts.map(a=>(
+              <option key={a.id} value={a.id}>
+                #{a.id} · User {a.user_id} · {a.account_type} · {fmt(a.balance)}
+              </option>
+            ))}
+          </select>
         </div>
 
         {loading && <div className="loading">Fetching...</div>}
@@ -550,11 +390,11 @@ function AccountsTab({ toast }) {
           <>
             <div className="label">Account #{acc.id}</div>
             {[
-              ["User ID", acc.user_id],
-              ["Bank ID", acc.bank_id],
-              ["Type", acc.account_type],
-              ["Balance", <span className="num">{fmt(acc.balance)}</span>],
-              ["Status", <Badge v={acc.activated}/>],
+              ["User ID",  acc.user_id],
+              ["Bank ID",  acc.bank_id],
+              ["Type",     acc.account_type],
+              ["Balance",  <span className="num">{fmt(acc.balance)}</span>],
+              ["Status",   <Badge v={acc.activated}/>],
             ].map(([k,v])=>(
               <div className="detail-row" key={k}>
                 <span className="key">{k}</span>
@@ -562,22 +402,18 @@ function AccountsTab({ toast }) {
               </div>
             ))}
             <div style={{marginTop:12}}>
-              <button className="danger" onClick={()=>deactivate(acc.id)}>
-                Deactivate account
-              </button>
+              <button className="danger" onClick={()=>deactivate(acc.id)}>Deactivate account</button>
             </div>
 
             {txns.length > 0 && (
               <>
-                <div className="label" style={{marginTop:24}}>Transaction history</div>
+                <div className="label" style={{marginTop:24}}>Transaction history ({txns.length})</div>
                 <table>
                   <thead><tr><th>ID</th><th>From</th><th>To</th><th>Amount</th></tr></thead>
                   <tbody>
                     {txns.map(t=>(
                       <tr key={t.id}>
-                        <td>{t.id}</td>
-                        <td>{t.from_id}</td>
-                        <td>{t.to_id}</td>
+                        <td>{t.id}</td><td>{t.from_id}</td><td>{t.to_id}</td>
                         <td className="num">{fmt(t.amount)}</td>
                       </tr>
                     ))}
@@ -591,17 +427,20 @@ function AccountsTab({ toast }) {
 
       <div className="panel">
         <div className="label">New account</div>
-        {[
-          ["User ID", "user_id", "number", "e.g. 2000"],
-          ["Bank ID", "bank_id", "number", "e.g. 1000"],
-          ["Opening Balance (₹)", "balance", "number", "e.g. 5000"],
-        ].map(([label, key, type, ph])=>(
-          <div className="form-group" key={key}>
-            <label>{label}</label>
-            <input type={type} placeholder={ph} value={form[key]}
-              onChange={e=>f({[key]:e.target.value})} />
-          </div>
-        ))}
+        <div className="form-group">
+          <label>User</label>
+          <select value={form.user_id} onChange={e=>f({user_id:e.target.value})}>
+            <option value="">— Select user —</option>
+            {users.map(u=><option key={u.id} value={u.id}>#{u.id} · {u.name}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Bank</label>
+          <select value={form.bank_id} onChange={e=>f({bank_id:e.target.value})}>
+            <option value="">— Select bank —</option>
+            {banks.map(b=><option key={b.id} value={b.id}>#{b.id} · {b.name}</option>)}
+          </select>
+        </div>
         <div className="form-group">
           <label>Account Type</label>
           <select value={form.account_type} onChange={e=>f({account_type:e.target.value})}>
@@ -609,6 +448,11 @@ function AccountsTab({ toast }) {
               <option key={t}>{t}</option>
             ))}
           </select>
+        </div>
+        <div className="form-group">
+          <label>Opening Balance (₹)</label>
+          <input type="number" placeholder="e.g. 5000" value={form.balance}
+            onChange={e=>f({balance:e.target.value})} />
         </div>
         <button className="primary" onClick={create}
           disabled={!form.user_id||!form.bank_id||!form.balance}>
@@ -619,8 +463,9 @@ function AccountsTab({ toast }) {
   );
 }
 
-// ─── TRANSACTIONS TAB ──────────────────────────────────────
+// ─── TRANSACTIONS TAB ───────────────────────────────────────
 function TransactionsTab({ toast }) {
+  const { accounts } = useData();
   const [form, setForm] = React.useState({from_id:"",to_id:"",amount:""});
   const [txnId, setTxnId] = React.useState("");
   const [txn, setTxn]     = React.useState(null);
@@ -628,11 +473,9 @@ function TransactionsTab({ toast }) {
   async function create() {
     try {
       const t = await req("POST", "/transactions", {
-        from_id: Number(form.from_id),
-        to_id:   Number(form.to_id),
-        amount:  Number(form.amount),
+        from_id: Number(form.from_id), to_id: Number(form.to_id), amount: Number(form.amount),
       });
-      toast(`Transaction #${t.id} complete`, "ok");
+      toast(`Transaction #${t.id} complete — ${fmt(t.amount)} transferred`, "ok");
       setForm({from_id:"",to_id:"",amount:""});
     } catch(e) { toast(e.message, "err"); }
   }
@@ -647,6 +490,8 @@ function TransactionsTab({ toast }) {
 
   const f = v => setForm(p=>({...p,...v}));
 
+  const activeAccounts = accounts.filter(a => a.activated);
+
   return (
     <main>
       <div className="panel">
@@ -656,9 +501,7 @@ function TransactionsTab({ toast }) {
             onChange={e=>setTxnId(e.target.value)}
             onKeyDown={e=>e.key==="Enter"&&lookup()}
             style={{flex:1}} />
-          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>
-            Fetch
-          </button>
+          <button className="primary" style={{width:"auto",padding:"9px 20px"}} onClick={lookup}>Fetch</button>
         </div>
 
         {txn && (
@@ -681,17 +524,33 @@ function TransactionsTab({ toast }) {
 
       <div className="panel">
         <div className="label">New transaction</div>
-        {[
-          ["From Account ID", "from_id", "e.g. 3000"],
-          ["To Account ID",   "to_id",   "e.g. 3001"],
-          ["Amount (₹)",      "amount",  "e.g. 500"],
-        ].map(([label, key, ph])=>(
-          <div className="form-group" key={key}>
-            <label>{label}</label>
-            <input type="number" placeholder={ph} value={form[key]}
-              onChange={e=>f({[key]:e.target.value})} />
-          </div>
-        ))}
+        <div className="form-group">
+          <label>From Account</label>
+          <select value={form.from_id} onChange={e=>f({from_id:e.target.value})}>
+            <option value="">— Select source account —</option>
+            {activeAccounts.map(a=>(
+              <option key={a.id} value={a.id}>
+                #{a.id} · {a.account_type} · {fmt(a.balance)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>To Account</label>
+          <select value={form.to_id} onChange={e=>f({to_id:e.target.value})}>
+            <option value="">— Select destination account —</option>
+            {activeAccounts.filter(a=>String(a.id)!==String(form.from_id)).map(a=>(
+              <option key={a.id} value={a.id}>
+                #{a.id} · {a.account_type} · {fmt(a.balance)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Amount (₹)</label>
+          <input type="number" placeholder="e.g. 500" value={form.amount}
+            onChange={e=>f({amount:e.target.value})} />
+        </div>
         <button className="primary" onClick={create}
           disabled={!form.from_id||!form.to_id||!form.amount}>
           Transfer Funds
@@ -701,34 +560,47 @@ function TransactionsTab({ toast }) {
   );
 }
 
-// ─── ROOT ──────────────────────────────────────────────────
-const TABS = ["Users", "Banks", "Accounts", "Transactions"];
+// ─── ROOT ───────────────────────────────────────────────────
+const TABS = ["Users","Banks","Accounts","Transactions"];
 
 function App() {
-  const [tab, setTab]     = React.useState("Users");
-  const [msg, setMsg]     = React.useState(null);
-  const [type, setType]   = React.useState("ok");
-  const timerRef          = React.useRef(null);
+  const [tab, setTab]   = React.useState("Users");
+  const [msg, setMsg]   = React.useState(null);
+  const [type, setType] = React.useState("ok");
+  const timerRef        = React.useRef(null);
+
+  const [users,    setUsers]    = React.useState([]);
+  const [banks,    setBanks]    = React.useState([]);
+  const [accounts, setAccounts] = React.useState([]);
+
+  async function refreshUsers()    { try { setUsers(await req("GET","/users"));       } catch(_){} }
+  async function refreshBanks()    { try { setBanks(await req("GET","/banks"));       } catch(_){} }
+  async function refreshAccounts() { try { setAccounts(await req("GET","/accounts")); } catch(_){} }
+
+  React.useEffect(() => {
+    refreshUsers();
+    refreshBanks();
+    refreshAccounts();
+  }, []);
 
   function toast(message, kind="ok") {
     setMsg(message); setType(kind);
     clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setMsg(null), 3000);
+    timerRef.current = setTimeout(()=>setMsg(null), 3500);
   }
 
+  const ctx = { users, banks, accounts, refreshUsers, refreshBanks, refreshAccounts };
   const props = { toast };
 
   return (
-    <>
+    <DataCtx.Provider value={ctx}>
       <header>
         <h1>RBI Internal Operations Dashboard — Authorized Personnel Only</h1>
         <span><span className="status-dot"/>Live · rbi-fastapi.onrender.com</span>
       </header>
       <nav>
         {TABS.map(t=>(
-          <button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>
-            {t}
-          </button>
+          <button key={t} className={tab===t?"active":""} onClick={()=>setTab(t)}>{t}</button>
         ))}
       </nav>
       {tab==="Users"        && <UsersTab        {...props}/>}
@@ -736,7 +608,7 @@ function App() {
       {tab==="Accounts"     && <AccountsTab      {...props}/>}
       {tab==="Transactions" && <TransactionsTab  {...props}/>}
       <Toast msg={msg} type={type}/>
-    </>
+    </DataCtx.Provider>
   );
 }
 
