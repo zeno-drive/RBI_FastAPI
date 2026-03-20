@@ -8,6 +8,7 @@ from typing import List
 
 app = FastAPI()
 
+
 # users
 @app.get("/users/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -16,6 +17,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+
 @app.post("/users", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(**user.model_dump())
@@ -23,6 +25,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
 
 @app.delete("/users/{user_id}", response_model=UserResponse)
 def deactivate_user(user_id: int, db: Session = Depends(get_db)):
@@ -33,12 +36,14 @@ def deactivate_user(user_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db.query(User).filter(User.id == user_id).first()
 
-@app.get("/users/{user_id}/accounts",response_model=List[AccountResponse])
-def get_user_accounts(user_id:int,db:Session=Depends(get_db)):
-    accounts=db.query(Account).filter(Account.user_id==user_id).all()
+
+@app.get("/users/{user_id}/accounts", response_model=List[AccountResponse])
+def get_user_accounts(user_id: int, db: Session = Depends(get_db)):
+    accounts = db.query(Account).filter(Account.user_id == user_id).all()
     if not accounts:
         return []
     return accounts
+
 
 # accounts
 @app.get("/accounts/{account_id}", response_model=AccountResponse)
@@ -48,6 +53,7 @@ def get_account(account_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Account not found")
     return account
 
+
 @app.post("/accounts", response_model=AccountResponse)
 def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     new_account = Account(**account.model_dump())
@@ -55,6 +61,7 @@ def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_account)
     return new_account
+
 
 @app.delete("/accounts/{account_id}", response_model=AccountResponse)
 def deactivate_account(account_id: int, db: Session = Depends(get_db)):
@@ -74,6 +81,7 @@ def get_bank(bank_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Bank not found")
     return bank
 
+
 @app.post("/banks", response_model=BankResponse)
 def create_bank(bank: BankCreate, db: Session = Depends(get_db)):
     new_bank = Bank(**bank.model_dump())
@@ -81,13 +89,16 @@ def create_bank(bank: BankCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_bank)
     return new_bank
+
+
 @app.get("/banks", response_model=List[BankResponse])
 def get_all_banks(db: Session = Depends(get_db)):
     return db.query(Bank).all()
 
-@app.get("/banks/{bank_id}/accounts",response_model=List[AccountResponse])
-def accounts_in_bank(bank_id:int,db:Session=Depends(get_db)):
-    accounts=db.query(Account).filter(Account.bank_id==bank_id).all()
+
+@app.get("/banks/{bank_id}/accounts", response_model=List[AccountResponse])
+def accounts_in_bank(bank_id: int, db: Session = Depends(get_db)):
+    accounts = db.query(Account).filter(Account.bank_id == bank_id).all()
     if not accounts:
         return []
     return accounts
@@ -101,9 +112,10 @@ def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Transaction not found")
     return transaction
 
+
 @app.post("/transactions", response_model=TransactionResponse)
 def create_transaction(transaction: TransactionCreate, db: Session = Depends(get_db)):
-    try:   
+    try:
         new_transaction = Transaction(**transaction.model_dump())
         db.add(new_transaction)
         db.commit()
@@ -113,11 +125,16 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(get
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e.orig))
 
-@app.get("/accounts/{account_id}/transactions",response_model=List[TransactionResponse])
-def account_transaction_history(account_id:int,db:Session=Depends(get_db)):
-    transaction=db.query(Transaction).filter(or_(Transaction.from_id==account_id,Transaction.to_id==account_id)).all()
+
+@app.get(
+    "/accounts/{account_id}/transactions", response_model=List[TransactionResponse]
+)
+def account_transaction_history(account_id: int, db: Session = Depends(get_db)):
+    transaction = (
+        db.query(Transaction)
+        .filter(or_(Transaction.from_id == account_id, Transaction.to_id == account_id))
+        .all()
+    )
     if not transaction:
         return []
-    return transaction 
-
-    
+    return transaction

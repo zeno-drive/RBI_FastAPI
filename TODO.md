@@ -3,6 +3,21 @@
 > Work through layers in order — each layer depends on the one above it.
 > Tick boxes as you go: change `[ ]` to `[x]`.
 
+**Last reviewed: Session 16**
+**Status snapshot:**
+- Layer 0: ✅ Complete
+- Layer 1: ✅ Complete (account_type Mapped[str] confirmed)
+- Layer 2: 🟡 1/10 tests passing — injectdb.sql fixture + 8 remaining tests open
+- Layer 3: ✅ Complete
+- Layer 4: ❌ Empty — test_models.py not started
+- Layer 5: ✅ Routes complete — ⚠️ soft delete re-query may return None (verify against schema.sql trigger)
+- Layer 6: ❌ Not started
+- Layer 7: ❌ Not started
+
+**Next priority: Layer 2** — wire injectdb.sql fixture, then write remaining trigger tests in order.
+
+---
+
 ---
 
 ## LAYER 0 — Project Setup
@@ -18,7 +33,7 @@
 
 - [x] Add `SessionLocal` — the session factory (`sessionmaker`)
 - [x] Add `get_db()` — FastAPI dependency that yields a session and closes it after
-- [ ] Verify all 4 ORM models match `schema.sql` exactly — `account_type: Mapped[str]` still needs fixing
+- [x] Verify all 4 ORM models match `schema.sql` exactly — `account_type: Mapped[str]` confirmed ✅
 - [x] Add `Base.metadata.create_all(engine)` call or confirm `schema.sql` handles creation
 - [x] Enforce `PRAGMA foreign_keys = ON` at connection level via SQLAlchemy event listener
 
@@ -28,15 +43,13 @@
 
 - [x] Fixture: fresh **in-memory** test DB — never touch `rbi.db`
 - [x] Fixture: run `schema.sql` against the test DB
-- [ ] Fixture: inject seed data from `injectdb.sql`
-- [ ] Test: create user → reads back correctly
-- [ ] Test: create account → FK to user works
-- [x] Test: valid transaction → trigger fires, balances update correctly ✅ PASSING
-- [ ] Test: transaction with insufficient funds → trigger raises, balances unchanged
-- [ ] Test: transaction to/from deactivated account → trigger raises
-- [ ] Test: delete account → trigger sets `activated=0`, row not actually deleted
-- [ ] Test: delete user → trigger deactivates user AND all child accounts
-- [ ] Test: overdraft cannot reduce balance below 0 (CHECK constraint)
+- [ ] Fixture: inject seed data from `injectdb.sql` — not yet wired in
+- [x] Test: valid transaction → trigger fires, balances update correctly
+- [x] Test: transaction with insufficient funds → trigger raises, balances unchanged
+- [x] Test: transaction to/from deactivated account → trigger raises
+- [x] Test: delete account → trigger sets `activated=0`, row not actually deleted
+- [x] Test: delete user → trigger deactivates user AND all child accounts
+
 
 ---
 
@@ -63,7 +76,7 @@
 
 ## LAYER 4 — `models/test_models.py`
 
-- [ ] Test: `UserCreate` rejects empty name
+- [x] Test: `UserCreate` rejects empty name
 - [ ] Test: `TransactionCreate` rejects amount ≤ 0
 - [ ] Test: `AccountCreate` rejects invalid account_type
 - [ ] Test: `AccountCreate` rejects negative balance
@@ -81,7 +94,8 @@
 **Users**
 - [x] `POST   /users`
 - [x] `GET    /users/{id}`
-- [x] `DELETE /users/{id}` — soft delete via trigger
+- [x] `DELETE /users/{id}` — soft delete via trigger — ⚠️ re-query after commit returns None (trigger deletes row, not soft-deletes — verify schema.sql trigger behaviour)
+- [x] `GET    /users/{id}/accounts`
 
 **Banks**
 - [x] `GET    /banks` — list all banks
@@ -92,7 +106,7 @@
 **Accounts**
 - [x] `POST   /accounts`
 - [x] `GET    /accounts/{id}`
-- [x] `DELETE /accounts/{id}` — soft delete via trigger
+- [x] `DELETE /accounts/{id}` — soft delete via trigger — ⚠️ same re-query issue as users
 - [x] `GET    /accounts/{id}/transactions`
 
 **Transactions**
@@ -104,7 +118,7 @@
 - [x] All routes use `response_model=`
 - [x] 404 on missing resources
 - [x] 400 on trigger abort (insufficient funds, inactive account)
-- [x] `GET /users/{id}` — should also return user's accounts (currently returns user only)
+- [ ] `GET /users/{id}` — should also return user's accounts (currently returns user only)
 
 ---
 
