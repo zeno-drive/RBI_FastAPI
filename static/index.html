@@ -196,14 +196,12 @@ function UsersTab({ toast }) {
                 <span className="val">{v}</span>
               </div>
             ))}
-
             <div style={{marginTop:12, display:"flex", gap:8}}>
               {user.activated
                 ? <button className="danger"   onClick={()=>deactivate(user.id)}>Deactivate user</button>
                 : <button className="activate" onClick={()=>reactivate(user.id)}>Reactivate user</button>
               }
             </div>
-
             {accs.length > 0 && (
               <>
                 <div className="label" style={{marginTop:24}}>Accounts ({accs.length})</div>
@@ -241,7 +239,6 @@ function UsersTab({ toast }) {
         <button className="primary" onClick={create} disabled={!name.trim()}>
           Create User
         </button>
-
         <div className="label" style={{marginTop:32}}>All users — {users.length} records</div>
         <table>
           <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
@@ -308,9 +305,7 @@ function BanksTab({ toast }) {
             ))}
           </tbody>
         </table>
-
         {loading && <div className="loading">Loading accounts...</div>}
-
         {bankId && accs.length > 0 && (
           <>
             <div className="label">Accounts in Bank #{bankId} ({accs.length})</div>
@@ -332,7 +327,6 @@ function BanksTab({ toast }) {
           <div className="empty">No accounts in this bank</div>
         )}
       </div>
-
       <div className="panel">
         <div className="label">New bank</div>
         <div className="form-group">
@@ -418,9 +412,7 @@ function AccountsTab({ toast }) {
             ))}
           </select>
         </div>
-
         {loading && <div className="loading">Fetching...</div>}
-
         {acc && (
           <>
             <div className="label">Account #{acc.id}</div>
@@ -436,14 +428,12 @@ function AccountsTab({ toast }) {
                 <span className="val">{v}</span>
               </div>
             ))}
-
             <div style={{marginTop:12, display:"flex", gap:8}}>
               {acc.activated
                 ? <button className="danger"   onClick={()=>deactivate(acc.id)}>Deactivate account</button>
                 : <button className="activate" onClick={()=>reactivate(acc.id)}>Reactivate account</button>
               }
             </div>
-
             {txns.length > 0 && (
               <>
                 <div className="label" style={{marginTop:24}}>Transaction history ({txns.length})</div>
@@ -469,7 +459,6 @@ function AccountsTab({ toast }) {
           </>
         )}
       </div>
-
       <div className="panel">
         <div className="label">New account</div>
         <div className="form-group">
@@ -495,8 +484,8 @@ function AccountsTab({ toast }) {
           </select>
         </div>
         <div className="form-group">
-          <label>Opening Balance (₹)</label>
-          <input type="number" placeholder="e.g. 5000" value={form.balance}
+          <label>Opening Balance (₹ Rupees)</label>
+          <input type="number" placeholder="e.g. 5000.00" value={form.balance}
             onChange={e=>f({balance:e.target.value})} />
         </div>
         <button className="primary" onClick={create}
@@ -510,7 +499,7 @@ function AccountsTab({ toast }) {
 
 // ─── TRANSACTIONS TAB ───────────────────────────────────────
 function TransactionsTab({ toast }) {
-  const { accounts } = useData();
+  const { accounts, refreshAccounts } = useData();
   const [form, setForm]   = React.useState({from_id:"",to_id:"",amount:""});
   const [txnId, setTxnId] = React.useState("");
   const [txn, setTxn]     = React.useState(null);
@@ -524,6 +513,7 @@ function TransactionsTab({ toast }) {
       });
       toast(`Transaction #${t.id} complete — ${fmt(t.amount)} transferred`, "ok");
       setForm({from_id:"",to_id:"",amount:""});
+      refreshAccounts();
     } catch(e) { toast(e.message, "err"); }
   }
 
@@ -551,7 +541,6 @@ function TransactionsTab({ toast }) {
             Fetch
           </button>
         </div>
-
         {txn && (
           <>
             <div className="label">Transaction #{txn.id}</div>
@@ -569,7 +558,6 @@ function TransactionsTab({ toast }) {
           </>
         )}
       </div>
-
       <div className="panel">
         <div className="label">New transaction</div>
         <div className="form-group">
@@ -597,8 +585,8 @@ function TransactionsTab({ toast }) {
           </select>
         </div>
         <div className="form-group">
-          <label>Amount (₹)</label>
-          <input type="number" placeholder="e.g. 500" value={form.amount}
+          <label>Amount (₹ Rupees)</label>
+          <input type="number" placeholder="e.g. 500.00" value={form.amount}
             onChange={e=>f({amount:e.target.value})} />
         </div>
         <button className="primary" onClick={create}

@@ -53,6 +53,7 @@ class BankCreate(BankBase):
 
 
 class AccountCreate(AccountBase):
+    balance: float = Field(gt=0, description="Account balance in rupees (e.g. 5000.00)")
     @field_validator("balance", mode="before")
     @classmethod
     def convert_balance(cls, v) -> int:
@@ -62,6 +63,7 @@ class AccountCreate(AccountBase):
 
 
 class TransactionCreate(TransactionBase):
+    amount: float = Field(gt=0, description="Transfer amount in rupees (e.g. 500.00)")
     @field_validator("amount", mode="before")
     @classmethod
     def convert_amount(cls, v) -> int:
